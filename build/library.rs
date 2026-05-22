@@ -24,8 +24,11 @@ pub fn get_rss_path() -> Result<PathBuf> {
 pub fn discover_library() -> Result<PathBuf> {
     for key in ["A121_RSS_LIB", "ACC_RSS_LIBS"] {
         if let Ok(path) = env::var(key) {
-            let path = PathBuf::from(path);
-            if path.is_dir() {
+            if path.is_empty() {
+                continue;
+            }
+            let path = PathBuf::from(&path);
+            if path.is_dir() && path != Path::new(".") {
                 println!("cargo:rerun-if-env-changed={key}");
                 return Ok(path);
             }
