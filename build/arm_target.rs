@@ -10,21 +10,24 @@ pub struct ArmTargetConfig {
 
 /// Select flags for `thumbv7em` (Cortex-M4F) or `thumbv8m.main` (Cortex-M33), etc.
 pub fn arm_target_config(target: &str) -> ArmTargetConfig {
-    if target.contains("v8m") || target.contains("m33") {
+    if target.starts_with("thumbv8m.main") || target.contains("m33") {
         ArmTargetConfig {
             clang_target: "thumbv8m.main-none-eabihf",
             cpu: "cortex-m33",
             fpu: "fpv5-sp-d16",
             arch_define: None,
         }
-    } else {
+    } else if target.starts_with("thumbv7em-none-eabihf") {
         ArmTargetConfig {
             clang_target: "thumbv7em-none-eabihf",
             cpu: "cortex-m4",
             fpu: "fpv4-sp-d16",
             arch_define: Some("-D__ARM_ARCH_7EM__=1"),
         }
+    } else {
+        panic!("Unsupported ARM target: {target}");
     }
+}
 }
 
 impl ArmTargetConfig {
